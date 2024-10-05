@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #3a6073, #16222A); /* Dark gradient */
+            color: white;
+            text-align: center;
+            padding-top: 50px;
+        }
+        #stopwatch {
+            font-size: 48px;
+            margin: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            background-color: #2196F3;
+            color: white;
+        }
+        button:hover {
+            background-color: #1E88E5;
+        }
+        .lap-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+        .lap-list li {
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Stopwatch</h1>
+    <div id="stopwatch">00:00:00</div>
+    
+    <!-- Buttons for controlling the stopwatch -->
+    <button onclick="startStop()">Start</button>
+    <button onclick="reset()">Reset</button>
+    <button onclick="lap()">Lap</button>
+    
+    <!-- List of lap times -->
+    <ul class="lap-list" id="lapTimes"></ul>
+
+    <script>
+        let timerInterval;
+        let running = false;
+        let elapsedTime = 0;
+        let startTime = 0;
+        let lapCount = 1;
+
+        // Start or Stop the Stopwatch
+        function startStop() {
+            if (!running) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateTime, 100);
+                running = true;
+            } else {
+                clearInterval(timerInterval);
+                elapsedTime = Date.now() - startTime;
+                running = false;
+            }
+        }
+
+        // Reset the Stopwatch
+        function reset() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            running = false;
+            document.getElementById('stopwatch').textContent = '00:00:00';
+            document.getElementById('lapTimes').innerHTML = '';
+            lapCount = 1;
+        }
+
+        // Track Lap Times
+        function lap() {
+            if (running) {
+                const lapTime = formatTime(elapsedTime);
+                const lapList = document.getElementById('lapTimes');
+                const lapItem = document.createElement('li');
+                lapItem.textContent = `Lap ${lapCount}: ${lapTime}`;
+                lapList.appendChild(lapItem);
+                lapCount++;
+            }
+        }
+
+        // Update Stopwatch Display
+        function updateTime() {
+            elapsedTime = Date.now() - startTime;
+            document.getElementById('stopwatch').textContent = formatTime(elapsedTime);
+        }
+
+        // Format Time in HH:MM:SS
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        // Pad numbers with leading zeros
+        function pad(number) {
+            return number < 10 ? '0' + number : number;
+        }
+    </script>
+
+</body>
+</html>
